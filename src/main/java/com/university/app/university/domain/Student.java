@@ -1,6 +1,7 @@
 package com.university.app.university.domain;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -36,4 +37,22 @@ public class Student {
 	@ManyToOne
 	private University university;
 
+	public void addCourse(Course course) {
+		StudentCourse studentCourse = new StudentCourse(this, course);
+		studentCourses.add(studentCourse);
+		course.getStudentCourses().add(studentCourse);
+	}
+
+	public void removeCourse(Course course) {
+		for (Iterator<StudentCourse> iterator = studentCourses.iterator(); iterator.hasNext();) {
+			StudentCourse studentCourse = iterator.next();
+
+			if (studentCourse.getStudent().equals(this) && studentCourse.getCourse().equals(course)) {
+				iterator.remove();
+				studentCourse.getStudent().getStudentCourses().remove(studentCourse);
+				studentCourse.setStudent(null);
+				studentCourse.setCourse(null);
+			}
+		}
+	}
 }

@@ -7,11 +7,15 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "student_course")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class StudentCourse {
 
 	@EmbeddedId
@@ -27,4 +31,9 @@ public class StudentCourse {
 			@JoinColumn(name = "course_id", referencedColumnName = "course_id", insertable = false, updatable = false) })
 	private Course course;
 
+	public StudentCourse(Student student, Course course) {
+		this.student = student;
+		this.course = course;
+		this.id = new StudentCourseId(student.getStudentId(), course.getCourseId());
+	}
 }

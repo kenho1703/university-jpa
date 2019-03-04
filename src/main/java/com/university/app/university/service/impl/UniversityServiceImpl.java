@@ -25,6 +25,7 @@ public class UniversityServiceImpl implements UniversityService {
 	@Autowired
 	private UniversityMapper universityMapper;
 
+
 	@Override
 	public UniversityDTO save(UniversityDTO universityDTO) {
 		University university = universityMapper.toEntity(universityDTO);

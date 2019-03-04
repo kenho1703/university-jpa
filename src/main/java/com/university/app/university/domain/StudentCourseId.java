@@ -22,4 +22,8 @@ public class StudentCourseId implements Serializable {
 	@Column(name = "course_id")
 	private Long courseId;
 
+	public StudentCourseId(Long studentId, Long courseId) {
+		this.studentId = studentId;
+		this.courseId = courseId;
+	}
 }

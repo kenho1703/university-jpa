@@ -5,10 +5,14 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Embeddable
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class HalfYearGradeId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -17,4 +21,9 @@ public class HalfYearGradeId implements Serializable {
 	private Long halfYearGradId;
 
 	private StudentCourseId studentCourseId;
+
+	public HalfYearGradeId(Long halfYearGradId, Long studentId, Long courseId) {
+		this.halfYearGradId = halfYearGradId;
+		this.studentCourseId = new StudentCourseId(studentId, courseId);
+	}
 }
