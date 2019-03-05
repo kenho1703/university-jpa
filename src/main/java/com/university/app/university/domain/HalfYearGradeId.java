@@ -22,7 +22,10 @@ public class HalfYearGradeId implements Serializable {
 
 	private StudentCourseId studentCourseId;
 
-	public HalfYearGradeId(Long halfYearGradId, Long studentId, Long courseId) {
+	public HalfYearGradeId() {
+	}
+	
+	public HalfYearGradeId(Long studentId, Long courseId, Long halfYearGradId) {
 		this.halfYearGradId = halfYearGradId;
 		this.studentCourseId = new StudentCourseId(studentId, courseId);
 	}

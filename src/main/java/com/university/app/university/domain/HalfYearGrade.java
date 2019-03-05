@@ -5,11 +5,11 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,15 +27,18 @@ public class HalfYearGrade implements Serializable {
 	@EmbeddedId
 	private HalfYearGradeId id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumns({
 			@JoinColumn(name = "student_id", referencedColumnName = "student_id", insertable = false, updatable = false),
-			@JoinColumn(name = "course_id", referencedColumnName = "course_id", insertable = false, updatable = false), })
-	@Size(min = 0, max = 2)
+			@JoinColumn(name = "course_id", referencedColumnName = "course_id", insertable = false, updatable = false)
+	})
 	private StudentCourse studentCourse;
 
 	@Column(name = "grade")
 	private Integer grade;
+
+	public HalfYearGrade() {
+	}
 
 	public HalfYearGrade(HalfYearGradeId halfYearGradeId, Integer grade) {
 		this.id = halfYearGradeId;

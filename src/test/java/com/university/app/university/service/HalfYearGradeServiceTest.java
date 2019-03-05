@@ -15,15 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.UniversityApplication;
 import com.university.app.university.domain.Course;
-import com.university.app.university.domain.HalfYearGrade;
-import com.university.app.university.domain.HalfYearGradeId;
 import com.university.app.university.domain.Student;
+import com.university.app.university.domain.StudentCourse;
 import com.university.app.university.domain.University;
+import com.university.app.university.exception.MaxGradeException;
+import com.university.app.university.exception.NotExistException;
 import com.university.app.university.repository.CourseRepository;
-import com.university.app.university.repository.HalfYearGradeRepository;
+import com.university.app.university.repository.StudentCourseRepository;
 import com.university.app.university.repository.StudentRepository;
-import com.university.app.university.service.dto.StudentDTO;
-import com.university.app.university.service.mapper.StudentMapper;
+import com.university.app.university.service.dto.HalfYearGradeDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UniversityApplication.class)
@@ -36,10 +36,10 @@ public class HalfYearGradeServiceTest {
 	private StudentRepository studentRepository;
 
 	@Autowired
-	private HalfYearGradeRepository halfYearGradeRepository;
+	private HalfYearGradeService halfYearGradeService;
 
 	@Autowired
-	private StudentMapper studentMapper;
+	private StudentCourseRepository studentCourseRepository;
 
 	private University university;
 
@@ -47,7 +47,10 @@ public class HalfYearGradeServiceTest {
 
 	private Course course;
 
+	private Student student;
+
 	@Before
+	@Transactional
 	public void init() {
 		course = new Course();
 		course.setName("Java Fundamentals");
@@ -67,24 +70,29 @@ public class HalfYearGradeServiceTest {
 		university.setId(1L);
 		university.setName("National University of VietNam");
 		university.setOrgNo(1234L);
+
+		student = new Student();
+		student.setName("John Doe");
 	}
 
 	@Test
 	@Transactional
-	public void testAddGrade() {
-		Course johnCourse = courseRepository.save(course);
-		
-		Student john = new Student();
-		john.setName("John Doe");
-		john.addCourse(johnCourse);
-		john.setUniversity(university);
+	public void testAddGrade() throws MaxGradeException, NotExistException {
+		Course courseForTest = courseRepository.saveAndFlush(course);
+		Student studentForTest = studentRepository.saveAndFlush(student);
 
-		StudentDTO studentDTO = studentMapper.toDto(studentRepository.save(john));
+		StudentCourse studentCourse = new StudentCourse(studentForTest, courseForTest);
+		studentCourseRepository.saveAndFlush(studentCourse);
 
-		HalfYearGrade halfYearGrade = new HalfYearGrade(
-				new HalfYearGradeId(12L, studentDTO.getStudentId(), johnCourse.getCourseId()), 10);
-		HalfYearGrade actual = halfYearGradeRepository.save(halfYearGrade);
+		HalfYearGradeDTO halfYearGradeDTO = new HalfYearGradeDTO(studentForTest.getStudentId(),
+				courseForTest.getCourseId(), 12L, 10);
+		HalfYearGradeDTO actual = halfYearGradeService.save(halfYearGradeDTO);
 
 		assertThat(actual).isNotNull();
+		assertThat(actual.getStudentId()).isNotNull().isEqualTo(studentForTest.getStudentId());
+		assertThat(actual.getCourseId()).isNotNull().isEqualTo(courseForTest.getCourseId());
+		assertThat(actual.getGrade()).isNotNull().isEqualTo(halfYearGradeDTO.getGrade());
+		assertThat(actual.getHalfYearGradeId()).isNotNull().isEqualTo(halfYearGradeDTO.getHalfYearGradeId());
 	}
+
 }

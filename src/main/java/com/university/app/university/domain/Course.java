@@ -3,7 +3,6 @@ package com.university.app.university.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +28,7 @@ public class Course {
 	@Column(name = "course_name")
 	private String name;
 
-	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "course")
 	private List<StudentCourse> studentCourses = new ArrayList<>();
 
 }
