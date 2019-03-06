@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.university.app.university.UniversityApplication;
 import com.university.app.university.domain.University;
 import com.university.app.university.exception.AlreadyExistException;
+import com.university.app.university.exception.NotExistException;
 import com.university.app.university.repository.UniversityRepository;
 import com.university.app.university.service.dto.UniversityDTO;
 
@@ -34,6 +35,8 @@ public class UniversityServiceTest {
 	private UniversityRepository universityRepository;
 
 	private University university;
+
+	private Optional<University> maybeUniversity;
 
 	private UniversityDTO universityDTO;
 
@@ -53,6 +56,8 @@ public class UniversityServiceTest {
 
 		universities = new ArrayList<>();
 		universities.add(university);
+
+		maybeUniversity = Optional.of(university);
 	}
 
 	@Test
@@ -83,7 +88,7 @@ public class UniversityServiceTest {
 	@Test
 	@Transactional
 	public void testFindOne() {
-		universityRepository.saveAndFlush(university);
+		Mockito.when(universityRepository.findById(university.getId())).thenReturn(maybeUniversity);
 
 		Optional<UniversityDTO> actual = universityService.findOne(university.getId());
 
@@ -91,18 +96,27 @@ public class UniversityServiceTest {
 		assertThat(actual.orElse(null).getId()).isEqualTo(university.getId());
 		assertThat(actual.orElse(null).getName()).isEqualTo(university.getName());
 		assertThat(actual.orElse(null).getOrgNo()).isEqualTo(university.getOrgNo());
+
+		Mockito.verify(universityRepository).findById(university.getId());
 	}
 
 	@Test
 	@Transactional
-	public void testDelete() {
-		universityRepository.saveAndFlush(university);
+	public void testDeleteById() throws NotExistException {
+		Mockito.when(universityRepository.findById(university.getId())).thenReturn(maybeUniversity);
 
 		universityService.delete(university.getId());
 
-		Optional<University> maybeUniversity = universityRepository.findById(university.getId());
-
-		assertThat(maybeUniversity).isNotPresent();
+		Mockito.verify(universityRepository).deleteById(university.getId());
 	}
 
+	@Test(expected = NotExistException.class)
+	@Transactional
+	public void testDeleteWithWrongId_ShouldReturnNotExistException() throws NotExistException {
+		Mockito.when(universityRepository.findById(university.getId())).thenReturn(maybeUniversity);
+
+		universityService.delete(2L);
+
+		Mockito.verify(universityRepository).deleteById(2L);
+	}
 }

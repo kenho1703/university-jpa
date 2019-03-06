@@ -39,7 +39,6 @@ public class UniversityRepositoryTest {
 		university.setId(10L);
 		university.setName("National of University");
 		university.setOrgNo(10L);
-
 	}
 
 	@Test

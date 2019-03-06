@@ -2,25 +2,30 @@ package com.university.app.university.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.UniversityApplication;
 import com.university.app.university.domain.Course;
+import com.university.app.university.domain.HalfYearGrade;
+import com.university.app.university.domain.HalfYearGradeId;
 import com.university.app.university.domain.Student;
 import com.university.app.university.domain.StudentCourse;
-import com.university.app.university.domain.University;
+import com.university.app.university.domain.StudentCourseId;
 import com.university.app.university.exception.MaxGradeException;
 import com.university.app.university.exception.NotExistException;
 import com.university.app.university.repository.CourseRepository;
+import com.university.app.university.repository.HalfYearGradeRepository;
 import com.university.app.university.repository.StudentCourseRepository;
 import com.university.app.university.repository.StudentRepository;
 import com.university.app.university.service.dto.HalfYearGradeDTO;
@@ -29,70 +34,68 @@ import com.university.app.university.service.dto.HalfYearGradeDTO;
 @SpringBootTest(classes = UniversityApplication.class)
 @Transactional
 public class HalfYearGradeServiceTest {
-	@Autowired
+	@MockBean
 	private CourseRepository courseRepository;
 
-	@Autowired
+	@MockBean
 	private StudentRepository studentRepository;
+
+	@MockBean
+	private StudentCourseRepository studentCourseRepository;
+
+	@MockBean
+	private HalfYearGradeRepository halfYearGradeRepository;
 
 	@Autowired
 	private HalfYearGradeService halfYearGradeService;
-
-	@Autowired
-	private StudentCourseRepository studentCourseRepository;
-
-	private University university;
-
-	private List<Course> courses;
 
 	private Course course;
 
 	private Student student;
 
+	private Optional<StudentCourse> studentCourse;
+
+	private HalfYearGrade halfYearGrade;
+
+	private HalfYearGradeDTO halfYearGradeDTO;
+
 	@Before
 	@Transactional
 	public void init() {
 		course = new Course();
+		course.setCourseId(12L);
 		course.setName("Java Fundamentals");
 
-		Course course1 = new Course();
-		course1.setName("Programming Fundamentals");
-
-		Course course2 = new Course();
-		course2.setName("Web Programming");
-
-		courses = new ArrayList<Course>();
-		courses.add(course1);
-		courses.add(course2);
-
-		// University test data
-		university = new University();
-		university.setId(1L);
-		university.setName("National University of VietNam");
-		university.setOrgNo(1234L);
-
 		student = new Student();
+		student.setStudentId(12L);
 		student.setName("John Doe");
+
+		studentCourse = Optional.of(new StudentCourse(student, course));
+		halfYearGradeDTO = new HalfYearGradeDTO(student.getStudentId(), course.getCourseId(), 12L, 10);
+		halfYearGrade = new HalfYearGrade();
+		halfYearGrade.setGrade(halfYearGradeDTO.getGrade());
+		halfYearGrade.setId(new HalfYearGradeId(student.getStudentId(), course.getCourseId(),
+				halfYearGradeDTO.getHalfYearGradeId()));
+		halfYearGrade.setStudentCourse(studentCourse.get());
 	}
 
 	@Test
 	@Transactional
 	public void testAddGrade() throws MaxGradeException, NotExistException {
-		Course courseForTest = courseRepository.saveAndFlush(course);
-		Student studentForTest = studentRepository.saveAndFlush(student);
+		Mockito.when(studentCourseRepository.findById(ArgumentMatchers.<StudentCourseId>any()))
+				.thenReturn(studentCourse);
+		Mockito.when(halfYearGradeRepository.save(ArgumentMatchers.<HalfYearGrade>any())).thenReturn(halfYearGrade);
 
-		StudentCourse studentCourse = new StudentCourse(studentForTest, courseForTest);
-		studentCourseRepository.saveAndFlush(studentCourse);
-
-		HalfYearGradeDTO halfYearGradeDTO = new HalfYearGradeDTO(studentForTest.getStudentId(),
-				courseForTest.getCourseId(), 12L, 10);
 		HalfYearGradeDTO actual = halfYearGradeService.save(halfYearGradeDTO);
 
 		assertThat(actual).isNotNull();
-		assertThat(actual.getStudentId()).isNotNull().isEqualTo(studentForTest.getStudentId());
-		assertThat(actual.getCourseId()).isNotNull().isEqualTo(courseForTest.getCourseId());
+		assertThat(actual.getStudentId()).isNotNull().isEqualTo(student.getStudentId());
+		assertThat(actual.getCourseId()).isNotNull().isEqualTo(course.getCourseId());
 		assertThat(actual.getGrade()).isNotNull().isEqualTo(halfYearGradeDTO.getGrade());
 		assertThat(actual.getHalfYearGradeId()).isNotNull().isEqualTo(halfYearGradeDTO.getHalfYearGradeId());
+
+		Mockito.verify(studentCourseRepository).findById(ArgumentMatchers.<StudentCourseId>any());
+		Mockito.verify(halfYearGradeRepository).save(ArgumentMatchers.<HalfYearGrade>any());
 	}
 
 }

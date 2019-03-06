@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.domain.University;
 import com.university.app.university.exception.AlreadyExistException;
+import com.university.app.university.exception.NotExistException;
 import com.university.app.university.repository.UniversityRepository;
 import com.university.app.university.service.UniversityService;
 import com.university.app.university.service.dto.UniversityDTO;
@@ -51,7 +52,13 @@ public class UniversityServiceImpl implements UniversityService {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(Long id) throws NotExistException {
+		Optional<University> university = universityRepository.findById(id);
+
+		if (!university.isPresent()) {
+			throw new NotExistException();
+		}
+
 		universityRepository.deleteById(id);
 	}
 
