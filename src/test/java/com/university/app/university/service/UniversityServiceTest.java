@@ -2,14 +2,17 @@ package com.university.app.university.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +30,14 @@ public class UniversityServiceTest {
 	@Autowired
 	private UniversityService universityService;
 
-	@Autowired
+	@MockBean
 	private UniversityRepository universityRepository;
 
 	private University university;
 
 	private UniversityDTO universityDTO;
+
+	private List<University> universities;
 
 	@Before
 	public void init() {
@@ -45,26 +50,34 @@ public class UniversityServiceTest {
 		universityDTO.setId(1L);
 		universityDTO.setName("National University of VietNam");
 		universityDTO.setOrgNo(1234L);
+
+		universities = new ArrayList<>();
+		universities.add(university);
 	}
 
 	@Test
 	@Transactional
 	public void testSaveUniversity() throws AlreadyExistException {
+		Mockito.when(universityRepository.save(university)).thenReturn(university);
+
 		UniversityDTO expected = universityDTO;
 		UniversityDTO actual = universityService.save(universityDTO);
 		assertThat(actual).isNotNull();
 		assertThat(actual.getId()).isNotNull().isEqualTo(expected.getId());
 		assertThat(actual.getName()).isNotNull().isEqualTo(expected.getName());
 		assertThat(actual.getOrgNo()).isNotNull().isEqualTo(expected.getOrgNo());
+		Mockito.verify(universityRepository).save(university);
 	}
 
 	@Test
 	@Transactional
 	public void testFindAll() {
-		universityRepository.saveAndFlush(university);
+		Mockito.when(universityRepository.findAll()).thenReturn(universities);
 
 		List<UniversityDTO> universities = universityService.findAll();
 		assertThat(universities).isNotNull().isNotEmpty();
+
+		Mockito.verify(universityRepository).findAll();
 	}
 
 	@Test
