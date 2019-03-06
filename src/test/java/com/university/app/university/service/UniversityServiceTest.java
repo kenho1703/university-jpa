@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.UniversityApplication;
 import com.university.app.university.domain.University;
+import com.university.app.university.exception.AlreadyExistException;
 import com.university.app.university.repository.UniversityRepository;
 import com.university.app.university.service.dto.UniversityDTO;
 
@@ -48,7 +49,7 @@ public class UniversityServiceTest {
 
 	@Test
 	@Transactional
-	public void testSaveUniversity() {
+	public void testSaveUniversity() throws AlreadyExistException {
 		UniversityDTO expected = universityDTO;
 		UniversityDTO actual = universityService.save(universityDTO);
 		assertThat(actual).isNotNull();

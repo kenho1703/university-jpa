@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.domain.University;
+import com.university.app.university.exception.AlreadyExistException;
 import com.university.app.university.repository.UniversityRepository;
 import com.university.app.university.service.UniversityService;
 import com.university.app.university.service.dto.UniversityDTO;
@@ -25,9 +26,12 @@ public class UniversityServiceImpl implements UniversityService {
 	@Autowired
 	private UniversityMapper universityMapper;
 
-
 	@Override
-	public UniversityDTO save(UniversityDTO universityDTO) {
+	public UniversityDTO save(UniversityDTO universityDTO) throws AlreadyExistException {
+		Optional<University> maybeUniversity = universityRepository.findById(universityDTO.getId());
+		if (maybeUniversity.isPresent()) {
+			throw new AlreadyExistException();
+		}
 		University university = universityMapper.toEntity(universityDTO);
 		university = universityRepository.save(university);
 		return universityMapper.toDto(university);
