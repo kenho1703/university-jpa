@@ -3,6 +3,8 @@ package com.university.app.university.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +58,10 @@ public class StudentServiceTest {
 
 	private Student student;
 
+	private Student studentWithoutUniversity;
+
+	private Student studentWithoutCourse;
+
 	private List<Student> students;
 
 	private Optional<University> maybeUniversity;
@@ -108,11 +114,22 @@ public class StudentServiceTest {
 		student.setUniversity(university);
 		student.getStudentCourses().add(new StudentCourse(studentRef, course1));
 		student.getStudentCourses().add(new StudentCourse(studentRef, course2));
+
+		studentWithoutUniversity = new Student();
+		studentWithoutUniversity.setStudentId(123L);
+		studentWithoutUniversity.setName("Ken Ho");
+		studentWithoutUniversity.getStudentCourses().add(new StudentCourse(studentRef, course1));
+		studentWithoutUniversity.getStudentCourses().add(new StudentCourse(studentRef, course2));
+
+		studentWithoutCourse = new Student();
+		studentWithoutCourse.setStudentId(123L);
+		studentWithoutCourse.setName("Ken Ho");
+		studentWithoutCourse.setUniversity(university);
 	}
 
 	@Test
 	@Transactional
-	public void testRegisterWithUniversityAndCourse() {
+	public void testSaveStudentWithUniversityAndCourse() {
 		Mockito.when(universityRepository.findById(university.getId())).thenReturn(maybeUniversity);
 		Mockito.when(courseRepository.findAllById(studentDTO.getCourseIds())).thenReturn(courses);
 		Mockito.when(studentRepository.save(ArgumentMatchers.<Student>any())).thenReturn(student);
@@ -130,6 +147,49 @@ public class StudentServiceTest {
 
 		Mockito.verify(universityRepository).findById(university.getId());
 		Mockito.verify(courseRepository).findAllById(studentDTO.getCourseIds());
+		Mockito.verify(studentRepository).save(ArgumentMatchers.<Student>any());
+	}
+
+	@Test
+	@Transactional
+	public void testSaveStudentWithoutUniversity() {
+		Mockito.when(universityRepository.findById(university.getId())).thenReturn(Optional.empty());
+		Mockito.when(courseRepository.findAllById(studentDTO.getCourseIds())).thenReturn(courses);
+		Mockito.when(studentRepository.save(ArgumentMatchers.<Student>any())).thenReturn(studentWithoutUniversity);
+
+		for (Course course : courses) {
+			studentDTO.getCourseIds().add(course.getCourseId());
+		}
+
+		StudentDTO actual = studentService.save(studentDTO);
+		assertThat(actual).isNotNull();
+		assertThat(actual.getStudentId()).isNotNull().isEqualTo(studentWithoutUniversity.getStudentId());
+		assertThat(actual.getName()).isNotNull().isEqualTo(studentWithoutUniversity.getName());
+		assertThat(actual.getUniversity()).isNull();
+		assertThat(actual.getCourses()).isNotNull().isNotEmpty();
+
+		Mockito.verify(universityRepository).findById(university.getId());
+		Mockito.verify(courseRepository).findAllById(studentDTO.getCourseIds());
+		Mockito.verify(studentRepository).save(ArgumentMatchers.<Student>any());
+	}
+
+	@Test
+	@Transactional
+	public void testSaveStudentWithCourses() {
+		Mockito.when(universityRepository.findById(university.getId())).thenReturn(maybeUniversity);
+		Mockito.when(courseRepository.findAllById(ArgumentMatchers.anyList())).thenReturn(courses);
+		Mockito.when(studentRepository.save(ArgumentMatchers.<Student>any())).thenReturn(student);
+
+		studentDTO.setCourseIds(new LinkedList<>(Arrays.asList(1L, 2L)));
+		StudentDTO actual = studentService.save(studentDTO);
+		assertThat(actual).isNotNull();
+		assertThat(actual.getStudentId()).isNotNull().isEqualTo(studentWithoutUniversity.getStudentId());
+		assertThat(actual.getName()).isNotNull().isEqualTo(studentWithoutUniversity.getName());
+		assertThat(actual.getUniversity()).isNotNull();
+		assertThat(actual.getCourses()).isNotEmpty();
+
+		Mockito.verify(universityRepository).findById(university.getId());
+		Mockito.verify(courseRepository).findAllById(ArgumentMatchers.anyList());
 		Mockito.verify(studentRepository).save(ArgumentMatchers.<Student>any());
 	}
 

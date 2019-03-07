@@ -30,6 +30,10 @@ import com.university.app.university.repository.UniversityRepository;
 import com.university.app.university.service.UniversityService;
 import com.university.app.university.service.dto.UniversityDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UniversityApplication.class)
 public class UniversityResourceTest {
@@ -91,6 +95,18 @@ public class UniversityResourceTest {
 		assertThat(createdUniversity.getId()).isEqualTo(universityDTO.getId());
 		assertThat(createdUniversity.getName()).isEqualTo(universityDTO.getName());
 		assertThat(createdUniversity.getOrgNo()).isEqualTo(universityDTO.getOrgNo());
+	}
+
+	@Test
+	@Transactional
+	public void createUniversityWithExistingId() throws Exception {
+		// Create the University
+		restMockMvc.perform(post("/api/university").contentType(TestUtil.APPLICATION_JSON_UTF8)
+				.content(TestUtil.convertObjectToJsonBytes(universityDTO)));
+
+		restMockMvc.perform(post("/api/university").contentType(TestUtil.APPLICATION_JSON_UTF8)
+				.content(TestUtil.convertObjectToJsonBytes(universityDTO))).andExpect(status().isBadRequest());
+
 	}
 
 	/**

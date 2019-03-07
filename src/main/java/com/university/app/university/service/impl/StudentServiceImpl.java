@@ -71,14 +71,4 @@ public class StudentServiceImpl implements StudentService {
 				.collect(Collectors.toCollection(LinkedList::new));
 	}
 
-	@Override
-	public Optional<StudentDTO> findOne(Long id) {
-		return studentRepository.findById(id).map(studentMapper::toDto);
-	}
-
-	@Override
-	public void delete(Long id) {
-		studentRepository.deleteById(id);
-	}
-
 }

@@ -21,7 +21,6 @@ import com.university.app.university.domain.HalfYearGrade;
 import com.university.app.university.domain.Student;
 import com.university.app.university.domain.StudentCourse;
 import com.university.app.university.domain.StudentCourseId;
-import com.university.app.university.exception.MaxGradeException;
 import com.university.app.university.exception.NotExistException;
 import com.university.app.university.repository.CourseRepository;
 import com.university.app.university.repository.HalfYearGradeRepository;
@@ -81,13 +80,13 @@ public class HalfYearGradeServiceTest {
 
 	@Test
 	@Transactional
-	public void testAddGrade() throws MaxGradeException, NotExistException {
+	public void testSaveGrade() throws NotExistException {
 		Mockito.when(studentCourseRepository.findById(ArgumentMatchers.<StudentCourseId>any()))
 				.thenReturn(studentCourse);
 		Mockito.when(halfYearGradeRepository.save(ArgumentMatchers.<HalfYearGrade>any())).thenReturn(halfYearGrade);
 		Mockito.when(studentRepository.findById(student.getStudentId())).thenReturn(Optional.of(student));
 		Mockito.when(courseRepository.findById(course.getCourseId())).thenReturn(Optional.of(course));
-		
+
 		HalfYearGradeDTO actual = halfYearGradeService.save(halfYearGradeDTO);
 
 		assertThat(actual).isNotNull();
@@ -98,6 +97,58 @@ public class HalfYearGradeServiceTest {
 
 		Mockito.verify(studentCourseRepository).findById(ArgumentMatchers.<StudentCourseId>any());
 		Mockito.verify(halfYearGradeRepository).save(ArgumentMatchers.<HalfYearGrade>any());
+		Mockito.verify(studentRepository).findById(student.getStudentId());
+		Mockito.verify(courseRepository).findById(course.getCourseId());
 	}
 
+	@Test(expected = NotExistException.class)
+	@Transactional
+	public void testSaveGradeWithWrongStudent_ShoudThrowNotExistException() throws NotExistException {
+		Mockito.when(studentCourseRepository.findById(ArgumentMatchers.<StudentCourseId>any()))
+				.thenReturn(studentCourse);
+		Mockito.when(halfYearGradeRepository.save(ArgumentMatchers.<HalfYearGrade>any())).thenReturn(halfYearGrade);
+		Mockito.when(studentRepository.findById(student.getStudentId())).thenReturn(Optional.empty());
+		Mockito.when(courseRepository.findById(course.getCourseId())).thenReturn(Optional.of(course));
+
+		halfYearGradeService.save(halfYearGradeDTO);
+
+		Mockito.verify(studentCourseRepository).findById(ArgumentMatchers.<StudentCourseId>any());
+		Mockito.verify(halfYearGradeRepository).save(ArgumentMatchers.<HalfYearGrade>any());
+		Mockito.verify(studentRepository).findById(student.getStudentId());
+		Mockito.verify(courseRepository).findById(course.getCourseId());
+	}
+	
+	@Test(expected = NotExistException.class)
+	@Transactional
+	public void testSaveGradeWithWrongCourse_ShoudThrowNotExistException() throws NotExistException {
+		Mockito.when(studentCourseRepository.findById(ArgumentMatchers.<StudentCourseId>any()))
+				.thenReturn(studentCourse);
+		Mockito.when(halfYearGradeRepository.save(ArgumentMatchers.<HalfYearGrade>any())).thenReturn(halfYearGrade);
+		Mockito.when(studentRepository.findById(student.getStudentId())).thenReturn(Optional.of(student));
+		Mockito.when(courseRepository.findById(course.getCourseId())).thenReturn(Optional.empty());
+
+		halfYearGradeService.save(halfYearGradeDTO);
+
+		Mockito.verify(studentCourseRepository).findById(ArgumentMatchers.<StudentCourseId>any());
+		Mockito.verify(halfYearGradeRepository).save(ArgumentMatchers.<HalfYearGrade>any());
+		Mockito.verify(studentRepository).findById(student.getStudentId());
+		Mockito.verify(courseRepository).findById(course.getCourseId());
+	}
+	
+	@Test(expected = NotExistException.class)
+	@Transactional
+	public void testSaveGradeWithWrongStudentCourse_ShoudThrowNotExistException() throws NotExistException {
+		Mockito.when(studentCourseRepository.findById(ArgumentMatchers.<StudentCourseId>any()))
+				.thenReturn(Optional.empty());
+		Mockito.when(halfYearGradeRepository.save(ArgumentMatchers.<HalfYearGrade>any())).thenReturn(halfYearGrade);
+		Mockito.when(studentRepository.findById(student.getStudentId())).thenReturn(Optional.of(student));
+		Mockito.when(courseRepository.findById(course.getCourseId())).thenReturn(Optional.of(course));
+
+		halfYearGradeService.save(halfYearGradeDTO);
+
+		Mockito.verify(studentCourseRepository).findById(ArgumentMatchers.<StudentCourseId>any());
+		Mockito.verify(halfYearGradeRepository).save(ArgumentMatchers.<HalfYearGrade>any());
+		Mockito.verify(studentRepository).findById(student.getStudentId());
+		Mockito.verify(courseRepository).findById(course.getCourseId());
+	}
 }

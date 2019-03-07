@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.domain.Course;
+import com.university.app.university.exception.AlreadyExistException;
 import com.university.app.university.repository.CourseRepository;
 import com.university.app.university.service.CourseService;
 import com.university.app.university.service.dto.CourseDTO;
@@ -30,7 +31,12 @@ public class CourseServiceImpl implements CourseService {
 	private CourseMapper courseMapper;
 
 	@Override
-	public CourseDTO save(CourseDTO courseDTO) {
+	public CourseDTO save(CourseDTO courseDTO) throws AlreadyExistException {
+		Optional<Course> maybeUniversity = courseRepository.findById(courseDTO.getCourseId());
+		if (maybeUniversity.isPresent()) {
+			throw new AlreadyExistException();
+		}
+
 		Course course = courseMapper.toEntity(courseDTO);
 		course = courseRepository.save(course);
 		return courseMapper.toDto(course);

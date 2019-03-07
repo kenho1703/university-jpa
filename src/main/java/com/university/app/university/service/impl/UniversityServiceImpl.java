@@ -60,7 +60,7 @@ public class UniversityServiceImpl implements UniversityService {
 		Optional<University> university = universityRepository.findById(id);
 
 		if (!university.isPresent()) {
-			throw new NotExistException();
+			throw new NotExistException("University is not found");
 		}
 
 		universityRepository.deleteById(id);

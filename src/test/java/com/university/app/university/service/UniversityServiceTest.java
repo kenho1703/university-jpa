@@ -116,11 +116,21 @@ public class UniversityServiceTest {
 
 	@Test(expected = NotExistException.class)
 	@Transactional
-	public void testDeleteWithWrongId_ShouldReturnNotExistException() throws NotExistException {
+	public void testDeleteWithWrongId_ShouldThrowNotExistException() throws NotExistException {
 		Mockito.when(universityRepository.findById(university.getId())).thenReturn(maybeUniversity);
 
 		universityService.delete(2L);
 
 		Mockito.verify(universityRepository).deleteById(2L);
+	}
+
+	@Test(expected = AlreadyExistException.class)
+	@Transactional
+	public void testSaveWithExistingUniversity_ShouldThrowAlreadyExistException() throws AlreadyExistException {
+		Mockito.when(universityRepository.findById(university.getId())).thenReturn(maybeUniversity);
+
+		universityService.save(universityDTO);
+
+		Mockito.verify(universityRepository).findById(university.getId());
 	}
 }

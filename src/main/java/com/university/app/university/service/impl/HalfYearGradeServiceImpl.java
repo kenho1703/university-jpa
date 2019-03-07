@@ -12,7 +12,6 @@ import com.university.app.university.domain.HalfYearGrade;
 import com.university.app.university.domain.Student;
 import com.university.app.university.domain.StudentCourse;
 import com.university.app.university.domain.StudentCourseId;
-import com.university.app.university.exception.MaxGradeException;
 import com.university.app.university.exception.NotExistException;
 import com.university.app.university.repository.CourseRepository;
 import com.university.app.university.repository.HalfYearGradeRepository;
@@ -47,22 +46,22 @@ public class HalfYearGradeServiceImpl implements HalfYearGradeService {
 
 	@Override
 	@Transactional
-	public HalfYearGradeDTO save(HalfYearGradeDTO halfYearGradeDTO) throws MaxGradeException, NotExistException {
+	public HalfYearGradeDTO save(HalfYearGradeDTO halfYearGradeDTO) throws NotExistException {
 		Optional<Student> student = studentRepository.findById(halfYearGradeDTO.getStudentId());
 		if (!student.isPresent()) {
-			throw new NotExistException();
+			throw new NotExistException("Student is not found");
 		}
 
 		Optional<Course> course = courseRepository.findById(halfYearGradeDTO.getCourseId());
 		if (!course.isPresent()) {
-			throw new NotExistException();
+			throw new NotExistException("Course is not found");
 		}
 
 		Optional<StudentCourse> studentCourse = studentCourseRepository
 				.findById(new StudentCourseId(student.get(), course.get()));
 
 		if (!studentCourse.isPresent()) {
-			throw new NotExistException();
+			throw new NotExistException("StudentCourse is not found");
 		}
 
 		HalfYearGrade halfYearGrade = new HalfYearGrade(studentCourse.get(), halfYearGradeDTO.getHalfYearGradeId(),
