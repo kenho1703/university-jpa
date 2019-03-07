@@ -4,29 +4,35 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Embeddable
+@EqualsAndHashCode
 @Getter
 @Setter
-@EqualsAndHashCode
 public class HalfYearGradeId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "hyg_id")
+	@NotNull
+	@Column(name = "hyg_id", unique = true, nullable = false)
 	private Long halfYearGradId;
 
-	private StudentCourseId studentCourseId;
+	@ManyToOne
+	@JoinColumns({
+			@JoinColumn(name = "student_id", referencedColumnName = "student_id", insertable = false, updatable = false),
+			@JoinColumn(name = "course_id", referencedColumnName = "course_id", insertable = false, updatable = false) })
+	private StudentCourse studentCourse;
 
-	public HalfYearGradeId() {
-	}
-	
-	public HalfYearGradeId(Long studentId, Long courseId, Long halfYearGradId) {
-		this.halfYearGradId = halfYearGradId;
-		this.studentCourseId = new StudentCourseId(studentId, courseId);
-	}
 }

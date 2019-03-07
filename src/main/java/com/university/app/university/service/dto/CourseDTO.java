@@ -5,6 +5,10 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Getter
 @Setter
 public class CourseDTO implements Serializable {

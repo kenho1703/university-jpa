@@ -7,20 +7,34 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.university.app.university.domain.Course;
 import com.university.app.university.domain.HalfYearGrade;
-import com.university.app.university.domain.HalfYearGradeId;
+import com.university.app.university.domain.Student;
 import com.university.app.university.domain.StudentCourse;
 import com.university.app.university.domain.StudentCourseId;
 import com.university.app.university.exception.MaxGradeException;
 import com.university.app.university.exception.NotExistException;
+import com.university.app.university.repository.CourseRepository;
 import com.university.app.university.repository.HalfYearGradeRepository;
 import com.university.app.university.repository.StudentCourseRepository;
+import com.university.app.university.repository.StudentRepository;
 import com.university.app.university.service.HalfYearGradeService;
 import com.university.app.university.service.dto.HalfYearGradeDTO;
 import com.university.app.university.service.mapper.HalfYearGradeMapper;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Service
+@Transactional
 public class HalfYearGradeServiceImpl implements HalfYearGradeService {
+
+	@Autowired
+	private StudentRepository studentRepository;
+
+	@Autowired
+	private CourseRepository courseRepository;
 
 	@Autowired
 	private StudentCourseRepository studentCourseRepository;
@@ -34,17 +48,25 @@ public class HalfYearGradeServiceImpl implements HalfYearGradeService {
 	@Override
 	@Transactional
 	public HalfYearGradeDTO save(HalfYearGradeDTO halfYearGradeDTO) throws MaxGradeException, NotExistException {
+		Optional<Student> student = studentRepository.findById(halfYearGradeDTO.getStudentId());
+		if (!student.isPresent()) {
+			throw new NotExistException();
+		}
+
+		Optional<Course> course = courseRepository.findById(halfYearGradeDTO.getCourseId());
+		if (!course.isPresent()) {
+			throw new NotExistException();
+		}
 
 		Optional<StudentCourse> studentCourse = studentCourseRepository
-				.findById(new StudentCourseId(halfYearGradeDTO.getStudentId(), halfYearGradeDTO.getCourseId()));
+				.findById(new StudentCourseId(student.get(), course.get()));
 
 		if (!studentCourse.isPresent()) {
 			throw new NotExistException();
 		}
 
-		HalfYearGradeId halfYearGradeId = new HalfYearGradeId(halfYearGradeDTO.getStudentId(),
-				halfYearGradeDTO.getCourseId(), halfYearGradeDTO.getHalfYearGradeId());
-		HalfYearGrade halfYearGrade = new HalfYearGrade(halfYearGradeId, halfYearGradeDTO.getGrade());
+		HalfYearGrade halfYearGrade = new HalfYearGrade(studentCourse.get(), halfYearGradeDTO.getHalfYearGradeId(),
+				halfYearGradeDTO.getGrade());
 
 		return halfYearGradeMapper.toDto(halfYearGradeRepository.save(halfYearGrade));
 	}

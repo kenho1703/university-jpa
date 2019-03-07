@@ -1,12 +1,13 @@
 package com.university.app.university.domain;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,45 +15,39 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Entity
 @Table(name = "student")
-@Data
-public class Student {
+@Getter
+@Setter
+@EqualsAndHashCode
+public class Student implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "studen_generator")
 	@SequenceGenerator(name = "studen_generator")
-	@Column(name = "student_id")
+	@Column(name = "student_id", unique = true, nullable = false)
+	@NotNull
 	private Long studentId;
 
 	@Column(name = "student_name")
 	private String name;
 
-	@OneToMany(mappedBy = "student", cascade = CascadeType.PERSIST, orphanRemoval = true)
-	private List<StudentCourse> studentCourses = new ArrayList<>();
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.student", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<StudentCourse> studentCourses = new LinkedList<>();
 
 	@ManyToOne
 	private University university;
 
-	public void addCourse(Course course) {
-		StudentCourse studentCourse = new StudentCourse(this, course);
-		studentCourses.add(studentCourse);
-		course.getStudentCourses().add(studentCourse);
-	}
-
-	public void removeCourse(Course course) {
-		for (Iterator<StudentCourse> iterator = studentCourses.iterator(); iterator.hasNext();) {
-			StudentCourse studentCourse = iterator.next();
-
-			if (studentCourse.getStudent().equals(this) && studentCourse.getCourse().equals(course)) {
-				iterator.remove();
-				studentCourse.getStudent().getStudentCourses().remove(studentCourse);
-				studentCourse.setStudent(null);
-				studentCourse.setCourse(null);
-			}
-		}
-	}
 }

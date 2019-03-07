@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.domain.Course;
 import com.university.app.university.domain.Student;
+import com.university.app.university.domain.StudentCourse;
 import com.university.app.university.domain.University;
 import com.university.app.university.repository.CourseRepository;
 import com.university.app.university.repository.StudentRepository;
@@ -20,7 +21,12 @@ import com.university.app.university.service.dto.CreateStudentDTO;
 import com.university.app.university.service.dto.StudentDTO;
 import com.university.app.university.service.mapper.StudentMapper;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Service
+@Transactional
 public class StudentServiceImpl implements StudentService {
 
 	@Autowired
@@ -49,7 +55,9 @@ public class StudentServiceImpl implements StudentService {
 			List<Course> courses = courseRepository.findAllById(studentDTO.getCourseIds());
 
 			for (Course course : courses) {
-				student.addCourse(course);
+				StudentCourse studentCourse = new StudentCourse();
+				studentCourse.setStudent(student);
+				studentCourse.setCourse(course);
 			}
 		}
 

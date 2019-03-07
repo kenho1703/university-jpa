@@ -17,6 +17,10 @@ import com.university.app.university.rest.util.HeaderUtil;
 import com.university.app.university.service.UniversityService;
 import com.university.app.university.service.dto.UniversityDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @RestController
 @RequestMapping("/api")
 public class UniversityResource {

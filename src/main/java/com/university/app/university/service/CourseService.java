@@ -5,6 +5,10 @@ import java.util.Optional;
 
 import com.university.app.university.service.dto.CourseDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 public interface CourseService {
 	CourseDTO save(CourseDTO courseDTO);
 

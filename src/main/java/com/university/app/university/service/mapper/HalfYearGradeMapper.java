@@ -8,9 +8,9 @@ import com.university.app.university.service.dto.HalfYearGradeDTO;
 
 @Mapper(componentModel = "spring", uses = {})
 public interface HalfYearGradeMapper extends EntityMapper<HalfYearGradeDTO, HalfYearGrade> {
-	@Mapping(target = "studentId", source = "id.studentCourseId.studentId")
-	@Mapping(target = "courseId", source = "id.studentCourseId.courseId")
-	@Mapping(target = "halfYearGradeId", source = "id.halfYearGradId")
+	@Mapping(target = "studentId", source = "pk.studentCourse.pk.student.studentId")
+	@Mapping(target = "courseId", source = "pk.studentCourse.pk.course.courseId")
+	@Mapping(target = "halfYearGradeId", source = "pk.halfYearGradId")
 	@Override
 	HalfYearGradeDTO toDto(HalfYearGrade entity);
 }

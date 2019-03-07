@@ -7,6 +7,10 @@ import com.university.app.university.exception.AlreadyExistException;
 import com.university.app.university.exception.NotExistException;
 import com.university.app.university.service.dto.UniversityDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 public interface UniversityService {
 	UniversityDTO save(UniversityDTO universityDTO) throws AlreadyExistException;
 

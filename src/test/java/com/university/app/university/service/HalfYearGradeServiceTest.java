@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.university.app.university.UniversityApplication;
 import com.university.app.university.domain.Course;
 import com.university.app.university.domain.HalfYearGrade;
-import com.university.app.university.domain.HalfYearGradeId;
 import com.university.app.university.domain.Student;
 import com.university.app.university.domain.StudentCourse;
 import com.university.app.university.domain.StudentCourseId;
@@ -30,6 +29,10 @@ import com.university.app.university.repository.StudentCourseRepository;
 import com.university.app.university.repository.StudentRepository;
 import com.university.app.university.service.dto.HalfYearGradeDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UniversityApplication.class)
 @Transactional
@@ -72,11 +75,8 @@ public class HalfYearGradeServiceTest {
 
 		studentCourse = Optional.of(new StudentCourse(student, course));
 		halfYearGradeDTO = new HalfYearGradeDTO(student.getStudentId(), course.getCourseId(), 12L, 10);
-		halfYearGrade = new HalfYearGrade();
-		halfYearGrade.setGrade(halfYearGradeDTO.getGrade());
-		halfYearGrade.setId(new HalfYearGradeId(student.getStudentId(), course.getCourseId(),
-				halfYearGradeDTO.getHalfYearGradeId()));
-		halfYearGrade.setStudentCourse(studentCourse.get());
+		halfYearGrade = new HalfYearGrade(studentCourse.get(), halfYearGradeDTO.getHalfYearGradeId(),
+				halfYearGradeDTO.getGrade());
 	}
 
 	@Test
@@ -85,7 +85,9 @@ public class HalfYearGradeServiceTest {
 		Mockito.when(studentCourseRepository.findById(ArgumentMatchers.<StudentCourseId>any()))
 				.thenReturn(studentCourse);
 		Mockito.when(halfYearGradeRepository.save(ArgumentMatchers.<HalfYearGrade>any())).thenReturn(halfYearGrade);
-
+		Mockito.when(studentRepository.findById(student.getStudentId())).thenReturn(Optional.of(student));
+		Mockito.when(courseRepository.findById(course.getCourseId())).thenReturn(Optional.of(course));
+		
 		HalfYearGradeDTO actual = halfYearGradeService.save(halfYearGradeDTO);
 
 		assertThat(actual).isNotNull();

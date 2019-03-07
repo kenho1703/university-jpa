@@ -30,8 +30,8 @@ public abstract class StudentMapper {
 			List<CourseDTO> courseList = new ArrayList<>();
 			for (StudentCourse studentCourse : student.getStudentCourses()) {
 				CourseDTO courseDTO = new CourseDTO();
-				courseDTO.setCourseId(studentCourse.getCourse().getCourseId());
-				courseDTO.setName(studentCourse.getCourse().getName());
+				courseDTO.setCourseId(studentCourse.getPk().getCourse().getCourseId());
+				courseDTO.setName(studentCourse.getPk().getCourse().getName());
 				courseList.add(courseDTO);
 			}
 			dto.setCourses(courseList);

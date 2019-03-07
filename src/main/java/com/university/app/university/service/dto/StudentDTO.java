@@ -6,6 +6,10 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Getter
 @Setter
 public class StudentDTO {

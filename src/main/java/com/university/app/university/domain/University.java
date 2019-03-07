@@ -8,17 +8,27 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Entity
 @Table(name = "university")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 public class University implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@NotNull
 	private Long id;
 
 	private Long orgNo;

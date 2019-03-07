@@ -15,7 +15,12 @@ import com.university.app.university.service.CourseService;
 import com.university.app.university.service.dto.CourseDTO;
 import com.university.app.university.service.mapper.CourseMapper;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Service
+@Transactional
 public class CourseServiceImpl implements CourseService {
 
 	@Autowired

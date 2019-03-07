@@ -78,9 +78,9 @@ public class UniversityRepositoryTest {
 	@Test
 	@Transactional
 	public void testDeleteById() {
-		this.entityManager.persistAndFlush(university);
+		Long id = (Long) this.entityManager.persistAndGetId(university);
 
-		universityRepository.deleteById(university.getId());
+		universityRepository.deleteById(id);
 
 		assertThat(universityRepository.count() == 0);
 	}

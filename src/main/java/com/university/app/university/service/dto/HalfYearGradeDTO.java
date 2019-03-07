@@ -5,6 +5,10 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Getter
 @Setter
 public class HalfYearGradeDTO {

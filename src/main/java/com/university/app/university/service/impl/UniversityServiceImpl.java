@@ -17,6 +17,10 @@ import com.university.app.university.service.UniversityService;
 import com.university.app.university.service.dto.UniversityDTO;
 import com.university.app.university.service.mapper.UniversityMapper;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Service
 @Transactional
 public class UniversityServiceImpl implements UniversityService {

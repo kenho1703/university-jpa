@@ -28,6 +28,10 @@ import com.university.app.university.repository.UniversityRepository;
 import com.university.app.university.service.dto.CreateStudentDTO;
 import com.university.app.university.service.dto.StudentDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UniversityApplication.class)
 @Transactional
@@ -102,11 +106,8 @@ public class StudentServiceTest {
 		student.setStudentId(123L);
 		student.setName("Ken Ho");
 		student.setUniversity(university);
-		List<StudentCourse> studentCourses = new ArrayList<>();
-		studentCourses.add(new StudentCourse(studentRef, course1));
-		studentCourses.add(new StudentCourse(studentRef, course2));
-		student.setStudentCourses(studentCourses);
-
+		student.getStudentCourses().add(new StudentCourse(studentRef, course1));
+		student.getStudentCourses().add(new StudentCourse(studentRef, course2));
 	}
 
 	@Test

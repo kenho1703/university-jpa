@@ -8,12 +8,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.university.app.university.UniversityApplication;
 import com.university.app.university.domain.University;
 import com.university.app.university.service.dto.UniversityDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UniversityApplication.class)
 public class UniversityMapperTest {
@@ -38,7 +41,6 @@ public class UniversityMapperTest {
 	}
 
 	@Test
-	@Transactional
 	public void toEntityMapShouldReturnUniversity() {
 		University actual = universityMapper.toEntity(universityDTO);
 
@@ -47,9 +49,8 @@ public class UniversityMapperTest {
 		assertThat(actual.getName()).isEqualTo(universityDTO.getName());
 		assertThat(actual.getOrgNo()).isEqualTo(universityDTO.getOrgNo());
 	}
-	
+
 	@Test
-	@Transactional
 	public void toDTOMapShouldReturnUniversityDTO() {
 		UniversityDTO actual = universityMapper.toDto(university);
 

@@ -23,6 +23,10 @@ import com.university.app.university.exception.NotExistException;
 import com.university.app.university.repository.UniversityRepository;
 import com.university.app.university.service.dto.UniversityDTO;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UniversityApplication.class)
 @Transactional

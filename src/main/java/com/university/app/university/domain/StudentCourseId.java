@@ -2,13 +2,17 @@ package com.university.app.university.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Thinh Tat
+ *
+ */
 @Embeddable
 @Getter
 @Setter
@@ -16,17 +20,17 @@ import lombok.Setter;
 public class StudentCourseId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "student_id")
-	private Long studentId;
+	@ManyToOne
+	private Student student;
 
-	@Column(name = "course_id")
-	private Long courseId;
-
+	@ManyToOne
+	private Course course;
+	
 	public StudentCourseId() {
 	}
 	
-	public StudentCourseId(Long studentId, Long courseId) {
-		this.studentId = studentId;
-		this.courseId = courseId;
+	public StudentCourseId(Student student, Course course) {
+		this.student = student;
+		this.course = course;
 	}
 }
